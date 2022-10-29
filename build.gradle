@@ -1,0 +1,125 @@
+plugins {
+    id 'application'
+    id 'org.graalvm.buildtools.native' version '0.9.16'
+    id 'org.jreleaser' version '1.2.0'
+}
+
+//version '1.12.1'+System.getProperty('release','-SNAPSHOT')
+
+def APP_VERSION = "1.12.0"
+
+def myArtifactId = "ilivalidator"
+def buildNumber = System.env.GITHUB_RUN_NUMBER
+def os = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem; 
+
+dependencies {
+    implementation "ch.interlis:ilivalidator:${APP_VERSION}" 
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "https://jars.interlis.ch"
+    }
+}
+
+graalvmNative {
+    toolchainDetection = false
+    binaries {
+        main {
+            imageName = 'ilivalidator'
+            mainClass = 'org.interlis2.validator.Main' 
+            debug = false 
+            verbose = true 
+            fallback = false 
+            configurationFileDirectories.from(file("conf-dir/")) 
+
+            buildArgs.add('--enable-url-protocols=http,https') 
+                        
+            jvmArgs.add("-Djava.awt.headless=false")
+
+            useFatJar = true
+        }
+    }
+}
+
+distributions {
+    nativeImage {
+        contents {
+            from 'build/native/nativeCompile/'
+        }
+    }
+}
+
+nativeImageDistZip {
+    archiveName myArtifactId + '-' + APP_VERSION + "_" + buildNumber + '-' + getOperatingSystemName() + '-' + getArchitectureName() + ".zip"
+}
+
+jreleaser {
+    gitRootSearch = true
+    
+    project {
+        name = myArtifactId
+        description = 'Native binaries for ilivalidator.'
+        website = 'http://blog.sogeo.services'
+        authors = ['edigonzales']
+        license = 'MIT'
+        docsUrl = 'https://github.com/edigonzales/ilivalidator-native'
+        copyright = '2022 Stefan Ziegler'
+        version = APP_VERSION + "_" + buildNumber
+        versionPattern = 'CUSTOM'
+        java {
+            groupId = 'ch.interlis'
+        }
+    }
+
+    release {
+        github {
+            repoOwner = 'edigonzales'
+            overwrite = true
+            apiEndpoint = 'https://api.github.com'
+        }
+    }
+
+    distributions {
+        appNative {
+            distributionType = 'NATIVE_IMAGE'
+            stereotype = 'CLI'
+            artifact {
+                path = "./artifacts-native/ilivalidator-${APP_VERSION}_${buildNumber}-linux-x86-64.zip"
+                platform = 'linux'
+            }
+            artifact {
+                path = "./artifacts-native/ilivalidator-${APP_VERSION}_${buildNumber}-osx-x86-64.zip"
+                platform = 'osx'
+            }
+            artifact {
+                path = "./artifacts-native/ilivalidator-${APP_VERSION}_${buildNumber}-windows-x86-64.zip"
+                platform = 'windows'
+            }
+        }
+    }
+}
+
+def getOperatingSystemName() {
+    def os = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem; 
+    def osName = os.getName().toLowerCase();
+    if (osName.contains("windows")) {
+        return "windows";
+    } else if (osName.contains("mac os x") || osName.contains("darwin") || osName.contains("osx")) {
+        return "osx";
+    } else if (osName.contains("linux")) {
+        return "linux";
+    } else {
+        // not strictly true
+        return "unix";
+    }
+}
+
+def getArchitectureName() {
+    def arch = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentArchitecture; 
+    def archName = arch.getName().toLowerCase();
+    return archName;    
+}
+
