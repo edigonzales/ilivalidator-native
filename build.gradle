@@ -6,7 +6,7 @@ plugins {
 
 //version '1.12.1'+System.getProperty('release','-SNAPSHOT')
 
-def APP_VERSION = "1.12.0"
+def APP_VERSION = "1.12.1"
 
 def myArtifactId = "ilivalidator"
 def buildNumber = System.env.GITHUB_RUN_NUMBER
@@ -36,6 +36,7 @@ graalvmNative {
             configurationFileDirectories.from(file("conf-dir/")) 
 
             buildArgs.add('--enable-url-protocols=http,https') 
+            //buildArgs.add('--enable-monitoring=jvmstat') 
                         
             jvmArgs.add("-Djava.awt.headless=false")
 
