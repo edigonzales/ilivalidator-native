@@ -26,5 +26,4 @@ Problem-Klasse (die entfernt werden muss)
   "methods":[{"name":"main","parameterTypes":["java.lang.String[]","ch.ehi.basics.settings.Settings"] }]
 }
 ```
-
 Müsste analysiert werden, warum die Klasse mit dem Agent gefunden wird.
