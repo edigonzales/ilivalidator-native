@@ -39,7 +39,7 @@ jobs:
       - name: Build native image
         id: buildNative
         run: |
-          ./gradlew nativeCompile nativeImageDistZip
+          ./gradlew nativeCompile nativeImageDistZip -i
 
       - name: 'Upload build artifact'
         if: always() && (steps.buildNative.outcome == 'success')
@@ -87,4 +87,4 @@ jobs:
           ./gradlew -i jreleaserRelease
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{ success() && github.ref == 'refs/heads/main'}}
+        if: ${{ success() && github.ref != 'refs/heads/main'}}
