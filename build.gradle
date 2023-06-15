@@ -1,10 +1,10 @@
 plugins {
     id 'application'
-    id 'org.graalvm.buildtools.native' version '0.9.16'
+    id 'org.graalvm.buildtools.native' version '0.9.22'
     id 'org.jreleaser' version '1.2.0'
 }
 
-def APP_VERSION = "1.12.1"
+def APP_VERSION = "1.13.3"
 
 def myArtifactId = "ilivalidator"
 def buildNumber = System.env.GITHUB_RUN_NUMBER
@@ -31,9 +31,19 @@ graalvmNative {
             debug = false 
             verbose = true 
             fallback = false 
-            //configurationFileDirectories.from(file("conf-dir/")) 
+            configurationFileDirectories.from(file("conf-dir/")) 
+
+// oder https://docs.oracle.com/cd/F44923_01/enterprise/19/guide/reference/native-image/pgo.html#profile-guided-optimizations
+// gzip -c filename.ext > anotherfile.gz
 
             buildArgs.add('--enable-url-protocols=http,https') 
+            //buildArgs.add('--pgo-instrument') 
+            buildArgs.add("--pgo=$projectDir/conf-dir/default.iprof.gzip") 
+            //buildArgs.add('--pgo=/Users/stefan/sources/ilitools-native/ilivalidator-native/default.iprof') 
+
+            //buildArgs.add('--gc=G1') 
+
+             
             //buildArgs.add('--enable-monitoring=jvmstat') 
                         
             jvmArgs.add("-Djava.awt.headless=false")
