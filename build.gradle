@@ -31,10 +31,8 @@ graalvmNative {
             debug = false 
             verbose = true 
             fallback = false 
-            configurationFileDirectories.from(file("conf-dir/")) 
+            configurationFileDirectories.from(file("conf-dir-"+getOperatingSystemName()+"/")) 
 
-// oder https://docs.oracle.com/cd/F44923_01/enterprise/19/guide/reference/native-image/pgo.html#profile-guided-optimizations
-// gzip -c filename.ext > anotherfile.gz
 
             buildArgs.add('--enable-url-protocols=http,https') 
             //buildArgs.add('--pgo-instrument') 

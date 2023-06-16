@@ -12,6 +12,14 @@ Plugin-Unterstützung funktioniert nicht. Sie müssten vorgängig reinkompiliert
 
 ## Develop
 
+Damit man das GUI verwenden kann, müssen die GraalVM-Konfig-Datein mit dem Agent hergestellt werden:
+
+```
+java -agentlib:native-image-agent=config-output-dir=conf-dir-osx -jar /Users/stefan/apps/ilivalidator-1.13.3/ilivalidator-1.13.3.jar
+
+```
+
+
 Die GraalVM-Konfig-Dateien müssen nicht mit dem Agent hergestellt werden. Interessanterweise "schlüpft" mit dem Agent eine GUI-Klasse rein, die dann beim Ausführen des Programmes zum Absturz führt:
 
 ```
